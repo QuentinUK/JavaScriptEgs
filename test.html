@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+
+<meta http-equiv="content-type" context="text/html;charset=UTF-8" />
+<title>The Title Goes Here:- JavaScript Demo File</title>
+<script type="text/javascript">
+// The JavaScript is in a script block, the browser runs this when it loads in the file.
+document.write("<p>This is 'myWindow'</p>")
+
+var TestAlgorithm = function(){
+
+// Array of boxes [weight,strength] 
+var AB=[[5,6],[4,3],[7,8],[8,6],[10,4],[4,7], [5,6], [7,7],[29,10],[9,10],[6,5],[9,18]];
+
+// for each item make set of items Potentially Above
+// can leave this out and just say all others are Potentially Above
+var w=0,s=1;// indices for weight, strength and 
+for(var i=0; i<AB.length;i++){
+    var B = AB[i];
+    B.pa=[];// array of potentially above boxes
+    for(var j=0; j<AB.length;j++){
+        if(i!=j && AB[j][w]<=B[s]){// not the same box and box B can support it
+            B.pa.push(j);// at to array of potentially above boxes
+        }
+    }
+}
+// Display
+for(var i=0; i<AB.length;i++){
+    var B = AB[i];
+    c(+i+" Weight="+B[w]+", Strength="+B[s]+", Weights= "+B.pa );
+}
+
+var stacksMax=[];
+var heightMax=0;
+    
+var stack = [];// height of boxes in stack
+var height=0;
+var canCarryWt=1e99;//Infinity;// the ground can carry anything
+// Try each box in turn as the lower  box
+for(var i=0; i<AB.length;i++){
+    stack = Array(AB.length);// array of heights
+    height=0;
+    testBox(i);
+} 
+ 
+// Test a box for the boxes it can support (recursive)  
+function testBox(i){
+    if(!stack[i]){// avoid cyclic 
+      var B=AB[i];
+      if(canCarryWt>=B[w]){// cadd add this box
+          var couldCarryWt=canCarryWt;
+          canCarryWt = Math.min(canCarryWt-B[w],B[s]); 
+          stack[i]=++height;
+          
+          // test sub items
+          for(var j=0;j<B.pa.length;j++){
+              testBox(B.pa[j]);
+           }
+          
+          // test height
+          if(height>heightMax){
+              stacksMax = [];// clear all the stacks 
+              heightMax = height;
+          }
+          if(height==heightMax){
+               // add a copy of stack to stacksMax
+              stacksMax.push(stack.slice());
+          }
+          // reset values
+          height--;
+          canCarryWt=couldCarryWt;
+          stack[i]=0;
+      }  
+   }
+}
+
+// Sort and Display
+var topFirst=true;
+var sortedStack=Array(heightMax);
+for(var k=0; k<stacksMax.length; k++){
+   // Sort items 
+    stack=stacksMax[k];
+    for(var i=0;i<stack.length;i++){
+        if(stack[i]){
+            if(topFirst){// nb heights are 1..
+                sortedStack[heightMax-stack[i]]=i;
+			}
+			else{
+				sortedStack[stack[i]-1]=i;// -1 for 0array
+			}
+        }
+    }
+    // Display 
+	drawHorizRule();
+	var weightSupported=0;
+    for(i=0;i<heightMax;i++) {
+        var B= AB[sortedStack[i]];
+		var status = (B[s]>= weightSupported)?"OK":"ERROR";
+        c("Height"+((topFirst?(heightMax-1-i):i)+" Box="+sortedStack[i] + ",["+B[w]+","+B[s] + "] "+status);
+		weightSupported+=B[w];
+     }
+}
+// Display functions
+function c(s){
+	var text= document.getElementById("disp").innerHTML;
+    text+= ((arguments.length?s:'')+"<br/>");
+	document.getElementById("disp").innerHTML=text;
+}
+function drawHorizRule(){
+	c("<hr/>")
+}
+
+}    
+
+// The JavaScript ends here (but there can be more than one of these blocks)
+</script>
+</head>
+<body>
+This stuff here is shown in the browser.
+<button type="button" onclick="TestAlgorithm()">Test Algorithm</button><div id="disp"><hr/></div>
+
+
+</body>
+</html>
