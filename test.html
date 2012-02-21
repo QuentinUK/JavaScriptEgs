@@ -99,7 +99,7 @@ for(var k=0; k<stacksMax.length; k++){
     for(i=0;i<heightMax;i++) {
         var B= AB[sortedStack[i]];
 		var status = (B[s]>= weightSupported)?"OK":"ERROR";
-        c("Height"+((topFirst?(heightMax-1-i):i)+" Box="+sortedStack[i] + ",["+B[w]+","+B[s] + "] "+status);
+        c("Height"+(topFirst?(heightMax-1-i):i)+" Box="+sortedStack[i] + ",["+B[w]+","+B[s] + "] "+status);
 		weightSupported+=B[w];
      }
 }
